@@ -4,11 +4,11 @@ const TOKEN = process.env.TWITTER_BEARER_TOKEN
 
 //create variables for the endpoint urls
 const rulesURL = 'https://api.twitter.com/2/tweets/search/stream/rules'
-const streamURL = 'https://api.twitter.com/2/tweets/search/stream?tweet.field=public_metrics&expansions=author_id'
+const streamURL = 'https://api.twitter.com/2/tweets/search/stream?tweet.fields=public_metrics&expansions=author_id'
 
 // create an array called rules to hold the rules we want to add
 //we are looking for tweets with the keyword webxr
-const rules = [{ value: 'webxr' }]
+const rules = [{ value: 'obama' }]
 
 //we need a function to get the stream rules
 
@@ -65,7 +65,24 @@ async function deleteRules(rules) {
     return response.body
 }
 
+//get stream of tweets
+function streamTweets() {
+    const stream = needle.get(streamURL, {
+        headers: {
+            Authorization: `Bearer ${TOKEN}`
+        }
+    })
+    //this gives us a stream we can call events on
+    stream.on('data', (data) => {
+        try {
+            //data is going to be a buffer so we need to parse it to json
+            const json = JSON.parse(data)
+            console.log(json)
+        } catch (error) {
 
+        }
+    })
+}
 
 
 (async () => {
@@ -85,6 +102,8 @@ async function deleteRules(rules) {
         console.error(error)
         process.exit(1)
     }
+
+    streamTweets()
 })()
 
 
