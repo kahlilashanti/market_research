@@ -1,6 +1,26 @@
+const http = require('http')
+const path = require('path')
+const express = require('express')
+const socketIo = require('socket.io')
 const needle = require('needle');
 const config = require('dotenv').config()
 const TOKEN = process.env.TWITTER_BEARER_TOKEN
+
+const PORT = process.env.PORT || 3000
+
+//initialize express
+const app = express()
+
+// create sockets
+const server = http.createServer(app)
+
+const io = socketIo(server)
+
+//to load the html page from the client side
+app.get('/', (req, res) => {
+    //when we hit this route we want to load the html page
+    res.sendFile(path.resolve(__dirname, '../', 'client', 'index.html'))
+})
 
 //create variables for the endpoint urls
 const rulesURL = 'https://api.twitter.com/2/tweets/search/stream/rules'
@@ -84,27 +104,33 @@ function streamTweets() {
     })
 }
 
+io.on('connection', () => {
+    console.log('client connected...')
+})
 
-(async () => {
-    let currentRules
 
-    try {
-        //this gets all stream rules
-        currentRules = await getRules()
+// (async () => {
+//     let currentRules
 
-        //this deletes all stream rules
-        await deleteRules(currentRules)
+//     try {
+//         //this gets all stream rules
+//         currentRules = await getRules()
 
-        // set rules based on rules array above
-        await setRules()
+//         //this deletes all stream rules
+//         await deleteRules(currentRules)
 
-    } catch (error) {
-        console.error(error)
-        process.exit(1)
-    }
+//         // set rules based on rules array above
+//         await setRules()
 
-    streamTweets()
-})()
+//     } catch (error) {
+//         console.error(error)
+//         process.exit(1)
+//     }
+
+//     streamTweets()
+// })()
+
+server.listen(PORT, () => console.log(`listening on port ${PORT}`))
 
 
 
