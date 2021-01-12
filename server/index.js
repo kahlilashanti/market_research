@@ -18,11 +18,11 @@ async function getRules() {
             Authorization: `Bearer ${TOKEN}`
         }
     })
-    console.log(response.body)
+    // console.log(response.body)
     return response.body
 }
 
-//we need a function to set the rules
+//we need a function to set stream rules
 
 async function setRules() {
 
@@ -36,16 +36,51 @@ async function setRules() {
             Authorization: `Bearer ${TOKEN}`
         }
     })
+    console.log(response.body)
+    return response.body
+}
+
+//we need a function to delete stream rules
+async function deleteRules(rules) {
+    //we want to make sure that rules.data is an array
+    if (!Array.isArray(rules.data)) {
+        return null
+    }
+
+    const ids = rules.data.map((rule) => rule.id)
+
+    const data = {
+        delete: {
+            ids: ids
+        }
+    }
+
+    const response = await needle('post', rulesURL, data, {
+        headers: {
+            'content-type': 'application/json',
+            Authorization: `Bearer ${TOKEN}`
+        }
+    })
     // console.log(response.body)
     return response.body
 }
+
+
+
 
 (async () => {
     let currentRules
 
     try {
-        await setRules()
+        //this gets all stream rules
         currentRules = await getRules()
+
+        //this deletes all stream rules
+        await deleteRules(currentRules)
+
+        // set rules based on rules array above
+        await setRules()
+
     } catch (error) {
         console.error(error)
         process.exit(1)
@@ -54,4 +89,3 @@ async function setRules() {
 
 
 
-//we need a function to delete the rules
