@@ -28,7 +28,7 @@ const streamURL = 'https://api.twitter.com/2/tweets/search/stream?tweet.fields=p
 
 // create an array called rules to hold the rules we want to add
 //we are looking for tweets with the keyword webxr
-const rules = [{ value: 'obama' }]
+const rules = [{ value: 'webxr' }, { value: 'virtual reality' }]
 
 //we need a function to get the stream rules
 
